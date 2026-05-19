@@ -1,35 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap');
+
 :root {
-  --bg-color: #f0f2f5;
-  --text-color: #333;
-  --card-bg: white;
-  --header-bg: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  --border-color: #eee;
-  --input-bg: white;
-  --input-border: #e0e0e0;
+  /* Ultra-Clean Editorial Palette: Warm Stone, Black, and Burnt Orange */
+  --base-bg: #F5F4F0; /* Warm stone */
+  --base-surface: #FFFFFF;
+  --base-surface-hover: #F9F9F9;
+  
+  --text-main: #111111;
+  --text-muted: #666666;
+  
+  --primary: #111111; /* Brutalist solid black buttons */
+  --primary-hover: #333333;
+  --primary-text: #FFFFFF;
+  
+  --accent: #E05C3E; /* Sophisticated burnt orange/rust */
+  --accent-hover: #C94C30;
+  --accent-light: #FCECE8;
+  
+  --danger: #D93838;
+  --success: #3A7D44;
+  
+  --border: #E5E5E5;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
+  --shadow-lg: 0 12px 24px rgba(0,0,0,0.04);
+  
+  --font-sans: 'Manrope', sans-serif;
+  --font-serif: 'Playfair Display', serif;
 }
 
 [data-theme='dark'] {
-  --bg-color: #121212;
-  --text-color: #f0f0f0;
-  --card-bg: #1e1e1e;
-  --header-bg: linear-gradient(135deg, #1f1f1f 0%, #2c2c2c 100%);
-  --border-color: #333;
-  --input-bg: #2c2c2c;
-  --input-border: #444;
+  --base-bg: #121212;
+  --base-surface: #1E1E1E;
+  --base-surface-hover: #2A2A2A;
+  
+  --text-main: #EAEAEA;
+  --text-muted: #888888;
+  
+  --primary: #FFFFFF; /* White buttons in dark mode */
+  --primary-hover: #E0E0E0;
+  --primary-text: #111111;
+  
+  --accent: #E05C3E;
+  --accent-hover: #FF7B5E;
+  --accent-light: rgba(224, 92, 62, 0.15);
+  
+  --border: #333333;
+  --shadow-sm: none;
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  transition: background-color 0.3s, color 0.3s;
+  font-family: var(--font-sans);
+  background-color: var(--base-bg);
+  color: var(--text-main);
+  min-height: 100vh;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 * {
   box-sizing: border-box;
+}
+
+::selection {
+  background: var(--accent);
+  color: white;
 }

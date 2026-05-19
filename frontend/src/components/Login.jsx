@@ -10,6 +10,14 @@ export default function Login() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  React.useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate('/dashboard');
+      }
+    });
+  }, [navigate]);
+
   const handleSignUp = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -49,34 +57,32 @@ export default function Login() {
   };
 
   return (
-    <div className="app-container">
-      <header className="header">
+    <div className="app-container" style={{ justifyContent: 'center' }}>
+      <header className="header" style={{ maxWidth: '500px', margin: '0 auto', width: '100%' }}>
         <h1>ReviewSense</h1>
         <p>Log in to access your AI reports</p>
       </header>
 
-      <main className="main-content" style={{ maxWidth: '400px', margin: '0 auto' }}>
-        <form style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px' }}>Email</label>
+      <main className="main-content" style={{ maxWidth: '500px', margin: '0 auto', width: '100%' }}>
+        <form style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="form-group">
+            <label className="form-label">Email</label>
             <input 
               type="email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="reviews-textarea"
-              style={{ padding: '10px' }}
+              className="custom-input"
               placeholder="you@example.com"
               required
             />
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px' }}>Password</label>
+          <div className="form-group">
+            <label className="form-label">Password</label>
             <input 
               type="password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="reviews-textarea"
-              style={{ padding: '10px' }}
+              className="custom-input"
               placeholder="••••••••"
               required
             />
@@ -84,22 +90,25 @@ export default function Login() {
           
           {error && <p className="error-message">{error}</p>}
           
-          <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '20px' }}>
             <button 
               onClick={handleLogin} 
               disabled={loading}
-              className="analyze-button" 
-              style={{ flex: 1, marginTop: 0 }}
+              className="auth-button"
             >
-              {loading ? 'Wait...' : 'Log In'}
+              {loading ? <span className="spinner"></span> : 'Log In Securely'}
             </button>
+            
+            <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem', margin: '10px 0' }}>
+              — OR —
+            </div>
+            
             <button 
               onClick={handleSignUp} 
               disabled={loading}
-              className="analyze-button" 
-              style={{ flex: 1, marginTop: 0, backgroundColor: '#2ecc71' }}
+              className="auth-button secondary"
             >
-              Sign Up
+              Create Free Account
             </button>
           </div>
         </form>

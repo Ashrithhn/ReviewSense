@@ -19,18 +19,28 @@ export default function Dashboard() {
 
   // Load theme and check auth on startup
   useEffect(() => {
-    // Check if user is logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Listen for auth changes (like logging out)
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (!session) {
-        navigate('/'); // Kick them back to login if not authenticated
+        navigate('/'); // Kick them back to login if logged out
       }
     });
+
+    // Also check immediately on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) navigate('/');
+    });
+
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
       setIsDarkMode(true);
       document.body.setAttribute('data-theme', 'dark');
     }
-  }, []);
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
@@ -122,18 +132,26 @@ export default function Dashboard() {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/');
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) console.error("Error logging out:", error.message);
+      
+      // Fallback: Manually clear local storage just in case Supabase hangs
+      localStorage.removeItem('supabase.auth.token');
+      
+      navigate('/');
+    } catch (err) {
+      console.error("Logout caught error:", err);
+      navigate('/');
+    }
   };
 
   return (
     <div className="app-container">
       <header className="header">
-        <div style={{ position: 'absolute', top: '20px', left: '20px' }}>
-          <button onClick={handleLogout} className="analyze-button" style={{ minWidth: 'auto', padding: '8px 12px', marginTop: 0, fontSize: '0.9rem', backgroundColor: '#e74c3c' }}>
-            Log Out
-          </button>
-        </div>
+        <button onClick={handleLogout} className="logout-button">
+          Log Out
+        </button>
         <button className="theme-toggle" onClick={toggleTheme}>
           {isDarkMode ? '☀️ Light' : '🌙 Dark'}
         </button>
