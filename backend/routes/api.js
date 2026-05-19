@@ -56,16 +56,29 @@ router.post('/analyze', async (req, res) => {
     const aiData = JSON.parse(aiText);
 
     // 5. Save to Supabase (Database)
-    // We wrap this in a try/catch so if the database fails, we still return results to the user
     if (process.env.SUPABASE_URL && process.env.SUPABASE_KEY) {
       try {
         const { createClient } = require('@supabase/supabase-js');
         const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
         
+        let userId = null;
+        
+        // Extract the JWT token sent from React
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+          const token = authHeader.split(' ')[1];
+          // Verify the token and get the user
+          const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+          if (user) {
+            userId = user.id;
+          }
+        }
+        
         const { error: dbError } = await supabase
           .from('reports')
           .insert([
             { 
+              user_id: userId, // Link this report to the logged-in user!
               reviews_text: reviews,
               overall_sentiment: aiData.overall_sentiment,
               sentiment_score: aiData.sentiment_score,
@@ -79,7 +92,7 @@ router.post('/analyze', async (req, res) => {
         if (dbError) {
           console.error("Supabase Insert Error:", dbError);
         } else {
-          console.log("Successfully saved report to Supabase!");
+          console.log(`Successfully saved report to Supabase for user: ${userId || 'anonymous'}`);
         }
       } catch (dbErr) {
         console.error("Database connection failed:", dbErr);

@@ -95,9 +95,18 @@ export default function Dashboard() {
       // Use environment variable for the API URL so it works in both development and production
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       
-      const response = await axios.post(`${apiUrl}/analyze`, {
-        reviews: reviewsText
-      });
+      // Get the user's secure token
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      const response = await axios.post(`${apiUrl}/analyze`, 
+        { reviews: reviewsText },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
       
       setResults(response.data);
     } catch (err) {
@@ -169,5 +178,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
-export default App;
