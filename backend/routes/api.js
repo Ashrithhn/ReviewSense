@@ -55,7 +55,40 @@ router.post('/analyze', async (req, res) => {
     // Convert the text string into a real JavaScript object
     const aiData = JSON.parse(aiText);
 
-    // 5. Send back to frontend!
+    // 5. Save to Supabase (Database)
+    // We wrap this in a try/catch so if the database fails, we still return results to the user
+    if (process.env.SUPABASE_URL && process.env.SUPABASE_KEY) {
+      try {
+        const { createClient } = require('@supabase/supabase-js');
+        const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+        
+        const { error: dbError } = await supabase
+          .from('reports')
+          .insert([
+            { 
+              reviews_text: reviews,
+              overall_sentiment: aiData.overall_sentiment,
+              sentiment_score: aiData.sentiment_score,
+              summary: aiData.summary,
+              themes: aiData.themes,
+              top_praises: aiData.top_praises,
+              top_complaints: aiData.top_complaints
+            }
+          ]);
+          
+        if (dbError) {
+          console.error("Supabase Insert Error:", dbError);
+        } else {
+          console.log("Successfully saved report to Supabase!");
+        }
+      } catch (dbErr) {
+        console.error("Database connection failed:", dbErr);
+      }
+    } else {
+      console.log("Skipping database save: SUPABASE_URL or SUPABASE_KEY missing in .env");
+    }
+
+    // 6. Send back to frontend!
     res.json(aiData);
 
   } catch (error) {
