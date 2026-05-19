@@ -11,6 +11,7 @@ import {
 
 function ResultsCard({ results }) {
   // We format data for the Recharts BarChart
+  const COLORS = ['#3A7D44', '#D93838'];
   const chartData = [
     {
       name: 'Sentiment',
@@ -18,9 +19,18 @@ function ResultsCard({ results }) {
     }
   ];
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
-    <div className="results-section">
-      <h2>Analysis Results</h2>
+    <div className="results-section" id="printable-report">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h2>Analysis Results</h2>
+        <button onClick={handlePrint} className="auth-button secondary print-button" style={{ marginTop: 0, width: 'auto', padding: '8px 16px', fontSize: '0.9rem' }}>
+          📄 Export as PDF
+        </button>
+      </div>
       
       <div className="dashboard-grid">
         {/* Left Column: Summary and Chart */}
@@ -36,7 +46,7 @@ function ResultsCard({ results }) {
                 <XAxis type="number" domain={[0, 100]} />
                 <YAxis dataKey="name" type="category" />
                 <Tooltip />
-                <Bar dataKey="score" fill="#3498db" radius={[0, 4, 4, 0]} barSize={30} />
+                <Bar dataKey="score" fill="#111111" radius={[0, 4, 4, 0]} barSize={30} />
               </BarChart>
             </ResponsiveContainer>
           </div>

@@ -18,7 +18,38 @@ router.post('/analyze', async (req, res) => {
   }
 
   try {
-    // 1. Choose the model (Using the latest available flash model)
+    let userId = null;
+    let supabase = null;
+
+    // 1. Verify User & Enforce Rate Limiting (5 requests per user)
+    if (process.env.SUPABASE_URL && process.env.SUPABASE_KEY) {
+      const { createClient } = require('@supabase/supabase-js');
+      supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+      
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.split(' ')[1];
+        const { data: { user } } = await supabase.auth.getUser(token);
+        
+        if (user) {
+          userId = user.id;
+          
+          // Check how many reports this user has generated
+          const { count } = await supabase
+            .from('reports')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId);
+            
+          if (count >= 5) {
+            return res.status(429).json({ 
+              error: 'Rate limit reached! You have used all 5 of your free AI reports.' 
+            });
+          }
+        }
+      }
+    }
+
+    // 2. Choose the model (Using the latest available flash model)
     const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
     // 2. Prompt Engineering: Tell the AI exactly how to behave and format its output
@@ -56,29 +87,13 @@ router.post('/analyze', async (req, res) => {
     const aiData = JSON.parse(aiText);
 
     // 5. Save to Supabase (Database)
-    if (process.env.SUPABASE_URL && process.env.SUPABASE_KEY) {
+    if (supabase && userId) {
       try {
-        const { createClient } = require('@supabase/supabase-js');
-        const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
-        
-        let userId = null;
-        
-        // Extract the JWT token sent from React
-        const authHeader = req.headers.authorization;
-        if (authHeader && authHeader.startsWith('Bearer ')) {
-          const token = authHeader.split(' ')[1];
-          // Verify the token and get the user
-          const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-          if (user) {
-            userId = user.id;
-          }
-        }
-        
         const { error: dbError } = await supabase
           .from('reports')
           .insert([
             { 
-              user_id: userId, // Link this report to the logged-in user!
+              user_id: userId,
               reviews_text: reviews,
               overall_sentiment: aiData.overall_sentiment,
               sentiment_score: aiData.sentiment_score,
@@ -92,13 +107,13 @@ router.post('/analyze', async (req, res) => {
         if (dbError) {
           console.error("Supabase Insert Error:", dbError);
         } else {
-          console.log(`Successfully saved report to Supabase for user: ${userId || 'anonymous'}`);
+          console.log(`Successfully saved report to Supabase for user: ${userId}`);
         }
       } catch (dbErr) {
         console.error("Database connection failed:", dbErr);
       }
     } else {
-      console.log("Skipping database save: SUPABASE_URL or SUPABASE_KEY missing in .env");
+      console.log("Skipping database save: Not logged in or SUPABASE config missing.");
     }
 
     // 6. Send back to frontend!

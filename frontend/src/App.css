@@ -326,3 +326,37 @@
   .theme-toggle { right: 15px; }
   .logout-button { left: 15px; }
 }
+
+/* Print / PDF Export Styles */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+  
+  .header, .input-section, .print-button, .theme-toggle, .logout-button {
+    display: none !important;
+  }
+  
+  .app-container {
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .main-content {
+    border: none;
+    padding: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .results-section {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .chart-container, .results-card {
+    break-inside: avoid;
+  }
+}
