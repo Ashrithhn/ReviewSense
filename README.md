@@ -55,4 +55,4 @@ Here is a step-by-step record of everything we achieved from scratch:
 
 ---
 
-*Built with ❤️ via Pair Programming.*
+*Built with ❤️ Ashrith H N"
