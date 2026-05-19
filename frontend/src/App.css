@@ -3,22 +3,41 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 20px;
-  color: #333;
+  color: var(--text-color);
 }
 
 .header {
   text-align: center;
   padding: 40px 0;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: var(--header-bg);
   border-radius: 12px;
   margin-bottom: 30px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 8px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+
+.theme-toggle:hover {
+  background: var(--card-bg);
 }
 
 .header h1 {
   margin: 0;
   font-size: 2.8rem;
-  color: #2c3e50;
+  color: inherit;
   font-weight: 800;
   letter-spacing: -1px;
 }
@@ -30,27 +49,30 @@
 }
 
 .main-content {
-  background: white;
+  background: var(--card-bg);
   padding: 40px;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  transition: background 0.3s;
 }
 
 .input-section h2, .results-section h2 {
   font-size: 1.5rem;
   margin-top: 0;
-  color: #2c3e50;
+  color: inherit;
 }
 
 .reviews-textarea {
   width: 100%;
   padding: 15px;
-  border: 2px solid #e0e0e0;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border: 2px solid var(--input-border);
   border-radius: 8px;
   font-size: 1rem;
   font-family: inherit;
   resize: vertical;
-  transition: border-color 0.3s;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
   box-sizing: border-box;
 }
 
@@ -65,14 +87,13 @@
   align-items: center;
   gap: 10px;
   padding: 10px;
-  background-color: #f8f9fa;
-  border: 1px dashed #ccc;
+  background-color: var(--header-bg);
+  border: 1px dashed var(--border-color);
   border-radius: 6px;
 }
 
 .upload-label {
   font-size: 0.95rem;
-  color: #555;
   font-weight: 500;
 }
 
@@ -118,21 +139,22 @@
 
 .results-section {
   margin-top: 40px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border-color);
   padding-top: 30px;
 }
 
 .results-card {
-  background: #f8f9fa;
+  background: var(--bg-color);
   padding: 25px;
   border-radius: 8px;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-color);
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .results-card h3 {
   margin-top: 25px;
   margin-bottom: 10px;
-  color: #34495e;
+  color: inherit;
   font-size: 1.2rem;
 }
 
@@ -179,8 +201,8 @@
   margin-bottom: 10px;
   padding: 10px;
   border-radius: 6px;
-  background-color: #fff;
-  border: 1px solid #eee;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-left: 4px solid #ccc;
   font-size: 0.95rem;
 }
